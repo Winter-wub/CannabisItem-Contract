@@ -13,6 +13,11 @@ contract CannaBisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
     
     uint256 private claimPrice;
     string private baseURI;
+    bool private isClaimable;
+    string private _name;
+
+    event ClaimNFT(uint256 tokenId, address claimer);
+
     
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -26,6 +31,16 @@ contract CannaBisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
         __ERC1155Burnable_init();
         __ERC1155Supply_init();
         claimPrice = 5000000000000;
+        _name = "CannaBisItem";
+        isClaimable = true;
+    }
+
+    function name() view public returns (string memory) {
+        return _name;
+    }
+
+    function setName(string memory newName) public onlyOwner {
+        _name = newName;
     }
 
     function setURI(string memory newuri) public onlyOwner {
@@ -76,9 +91,15 @@ contract CannaBisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
     }
 
     function claimNFT(uint256 tokenId) public payable {
+        require(isClaimable, "Claiming is not enabled");
         require(msg.value >= claimPrice, "Not enough ETH");
         _safeTransferFrom(owner(), msg.sender, tokenId, 1, "");
         (bool sent, bytes memory data) = owner().call{value: msg.value}("");
         require(sent, "Failed to send Ether");
+        emit ClaimNFT(tokenId, msg.sender);
+    }
+
+    function setClaimable(bool claimable) public onlyOwner {
+        isClaimable = claimable;
     }
 }
