@@ -3,11 +3,9 @@ import { ethers, upgrades } from "hardhat";
 // run only first time
 async function main() {
   const CannabisItem = await ethers.getContractFactory("CannaBisItem");
-  const instance = await upgrades.deployProxy(CannabisItem);
-  await instance.deployed();
-  instance;
-  console.log(`deployed to ${instance.address}`);
-  console.log(`hash ${instance.deployTransaction.hash}`);
+  const canItem = await upgrades.deployProxy(CannabisItem);
+  await canItem.deployed();
+  console.log(`CanItem deployed to ${canItem.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

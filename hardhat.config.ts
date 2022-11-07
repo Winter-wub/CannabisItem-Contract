@@ -20,7 +20,11 @@ const config: HardhatUserConfig = {
   networks: {
     "bsc-testnet": {
       accounts: [privateKey],
-      url: "https://data-seed-prebsc-1-s1.binance.org:8545	",
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+    },
+    goerli: {
+      accounts: [privateKey],
+      url: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
     },
     localhost: {
       accounts: [

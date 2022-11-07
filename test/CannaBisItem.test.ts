@@ -44,7 +44,7 @@ describe("CannaItem", async () => {
       owner.address,
       itemId,
       total,
-      "0x0000000000000000000000000000000000000000000000000000000000000000"
+      ethers.constants.AddressZero
     );
     await CannabisItem.setClaimPrice(price);
     const contractByPlayer = await CannabisItem.connect(player);
@@ -56,5 +56,25 @@ describe("CannaItem", async () => {
       itemId
     );
     expect(balanceOfPlayer).to.equal(1);
+  });
+
+  it("should not cliam a token when isClaimable = false", async () => {
+    const itemId = 1;
+    const price = ethers.utils.parseEther("0.1");
+    const total = 23000;
+    await CannabisItem.mint(
+      owner.address,
+      itemId,
+      total,
+      ethers.constants.AddressZero
+    );
+    await CannabisItem.setClaimPrice(price);
+    const contractByPlayer = await CannabisItem.connect(player);
+    await CannabisItem.setClaimable(false);
+    expect(
+      contractByPlayer.claimNFT(itemId, {
+        value: price,
+      })
+    ).to.be.revertedWith("Claiming is not enabled");
   });
 });

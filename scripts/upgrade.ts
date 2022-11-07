@@ -1,10 +1,10 @@
 import { ethers, upgrades } from "hardhat";
 
 async function main() {
-  const proxyAddress = process.env.proxyAddress ?? "";
+  const canItemAddress = process.env.cannabisItemAddress ?? "";
   const CannabisItem = await ethers.getContractFactory("CannaBisItem");
-  const instance = await upgrades.upgradeProxy(proxyAddress, CannabisItem);
-  console.log(`hash ${instance.deployTransaction.hash}`);
+  const canItem = await upgrades.upgradeProxy(canItemAddress, CannabisItem);
+  console.log("canItem upgraded", canItem);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
