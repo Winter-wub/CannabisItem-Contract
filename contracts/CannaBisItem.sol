@@ -54,7 +54,7 @@ contract CannabisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
     }
 
     function uri(uint256 id) public view override returns (string memory) {
-        return string(abi.encodePacked(baseURI, Strings.toString(id)));
+        return string(abi.encodePacked(baseURI, Strings.toString(id), ".json"));
     }
 
     function pause() public onlyOwner {

@@ -1,8 +1,9 @@
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
+
 import dotenv from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
-
 dotenv.config();
 
 const privateKey = process.env.pk ?? "";
@@ -32,6 +33,9 @@ const config: HardhatUserConfig = {
       ],
       url: "http://localhost:8545",
     },
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
 
