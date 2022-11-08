@@ -159,32 +159,32 @@
             "offset": 0,
             "slot": "351",
             "type": "t_uint256",
-            "contract": "CannaBisItem",
-            "src": "contracts/CannaBisItem.sol:14"
+            "contract": "CannabisItem",
+            "src": "contracts/CannabisItem.sol:14"
           },
           {
             "label": "baseURI",
             "offset": 0,
             "slot": "352",
             "type": "t_string_storage",
-            "contract": "CannaBisItem",
-            "src": "contracts/CannaBisItem.sol:15"
+            "contract": "CannabisItem",
+            "src": "contracts/CannabisItem.sol:15"
           },
           {
             "label": "isClaimable",
             "offset": 0,
             "slot": "353",
             "type": "t_bool",
-            "contract": "CannaBisItem",
-            "src": "contracts/CannaBisItem.sol:16"
+            "contract": "CannabisItem",
+            "src": "contracts/CannabisItem.sol:16"
           },
           {
             "label": "_name",
             "offset": 0,
             "slot": "354",
             "type": "t_string_storage",
-            "contract": "CannaBisItem",
-            "src": "contracts/CannaBisItem.sol:17"
+            "contract": "CannabisItem",
+            "src": "contracts/CannabisItem.sol:17"
           }
         ],
         "types": {

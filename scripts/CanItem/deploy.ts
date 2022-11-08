@@ -2,7 +2,7 @@ import { ethers, upgrades } from "hardhat";
 
 // run only first time
 async function main() {
-  const CannabisItem = await ethers.getContractFactory("CannaBisItem");
+  const CannabisItem = await ethers.getContractFactory("CannabisItem");
   const canItem = await upgrades.deployProxy(CannabisItem);
   await canItem.deployed();
   console.log(`CanItem deployed to ${canItem.address}`);

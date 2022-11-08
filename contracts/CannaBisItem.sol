@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155Supp
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract CannaBisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ERC1155BurnableUpgradeable, ERC1155SupplyUpgradeable {
+contract CannabisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ERC1155BurnableUpgradeable, ERC1155SupplyUpgradeable {
     
     uint256 private claimPrice;
     string private baseURI;
@@ -31,7 +31,7 @@ contract CannaBisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
         __ERC1155Burnable_init();
         __ERC1155Supply_init();
         claimPrice = 5000000000000;
-        _name = "CannaBisItem";
+        _name = "CanItem";
         isClaimable = true;
     }
 
@@ -90,12 +90,12 @@ contract CannaBisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
         claimPrice = price;
     }
 
-    function claimNFT(uint256 tokenId) public payable {
-        require(isClaimable, "Claiming is not enabled");
-        require(msg.value >= claimPrice, "Not enough ETH");
-        _safeTransferFrom(owner(), msg.sender, tokenId, 1, "");
+    function claimNFT(uint256 tokenId,uint256 price) public payable {
+        require(isClaimable == false, "Claiming is not enabled");
+        require(msg.value >= price, "Not enough ETH");
         (bool sent, bytes memory data) = owner().call{value: msg.value}("");
         require(sent, "Failed to send Ether");
+        _safeTransferFrom(owner(), msg.sender, tokenId, 1, "");
         emit ClaimNFT(tokenId, msg.sender);
     }
 

@@ -1,18 +1,18 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
-import { CannaBisItem } from "./../typechain-types/contracts/CannaBisItem";
+import { CannabisItem } from "./../typechain-types/contracts/CannabisItem";
 
 describe("CannaItem", async () => {
-  let CannabisItem: CannaBisItem;
+  let CannabisItem: CannabisItem;
   let owner: SignerWithAddress;
   let player: SignerWithAddress;
 
   beforeEach(async () => {
     [owner, player] = await ethers.getSigners();
-    const contract = await ethers.getContractFactory("CannaBisItem");
+    const contract = await ethers.getContractFactory("CannabisItem");
     const instance = await upgrades.deployProxy(contract);
-    CannabisItem = (await instance.deployed()) as CannaBisItem;
+    CannabisItem = (await instance.deployed()) as CannabisItem;
   });
 
   it("should set the base URI", async () => {
