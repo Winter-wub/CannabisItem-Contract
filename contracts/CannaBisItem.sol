@@ -15,6 +15,8 @@ contract CannabisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
     string private baseURI;
     bool private isClaimable;
     string private _name;
+    uint256 private _startClaimTokenID;
+    uint256 private _endClaimTokenID;
 
     event ClaimNFT(uint256 tokenId, address claimer);
 
@@ -90,13 +92,22 @@ contract CannabisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
         claimPrice = price;
     }
 
-    function claimNFT(uint256 tokenId,uint256 price) public payable {
-        require(isClaimable == false, "Claiming is not enabled");
-        require(msg.value >= price, "Not enough ETH");
+    function random(uint num) private view returns(uint){
+        return uint(keccak256(abi.encodePacked(block.timestamp,block.difficulty, msg.sender))) % num;
+    }
+
+    function claimNFT() public payable returns (uint) {
+        require(isClaimable == true, "Claiming is not enabled");
+        require(msg.value >= claimPrice, "Not enough ETH");
         (bool sent, bytes memory data) = owner().call{value: msg.value}("");
         require(sent, "Failed to send Ether");
+        uint tokenId = random(5);
+        while(balanceOf(owner(), tokenId) == 0) {
+            tokenId = random(5);
+        }
         _safeTransferFrom(owner(), msg.sender, tokenId, 1, "");
         emit ClaimNFT(tokenId, msg.sender);
+        return tokenId;
     }
 
     function setClaimable(bool claimable) public onlyOwner {

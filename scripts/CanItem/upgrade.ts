@@ -4,7 +4,7 @@ async function main() {
   const canItemAddress = process.env.CannabisItemAddress ?? "";
   const CannabisItem = await ethers.getContractFactory("CannabisItem");
   const canItem = await upgrades.upgradeProxy(canItemAddress, CannabisItem);
-  console.log("canItem upgraded", canItem);
+  console.log("canItem upgraded", canItem.deployTransaction.blockHash);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

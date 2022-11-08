@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
-import { CannabisItem } from "./../typechain-types/contracts/CannabisItem";
+import { CannabisItem } from "./../typechain-types/contracts/CannaBisItem";
 
 describe("CannaItem", async () => {
   let CannabisItem: CannabisItem;
@@ -42,20 +42,38 @@ describe("CannaItem", async () => {
     const total = 23000;
     await CannabisItem.mint(
       owner.address,
-      itemId,
+      1,
+      total,
+      ethers.constants.AddressZero
+    );
+    await CannabisItem.mint(
+      owner.address,
+      2,
+      total,
+      ethers.constants.AddressZero
+    );
+    await CannabisItem.mint(
+      owner.address,
+      3,
+      total,
+      ethers.constants.AddressZero
+    );
+    await CannabisItem.mint(
+      owner.address,
+      4,
       total,
       ethers.constants.AddressZero
     );
     await CannabisItem.setClaimPrice(price);
     const contractByPlayer = await CannabisItem.connect(player);
-    await contractByPlayer.claimNFT(itemId, {
-      value: price,
-    });
-    const balanceOfPlayer = await CannabisItem.balanceOf(
-      player.address,
-      itemId
-    );
-    expect(balanceOfPlayer).to.equal(1);
+    const data = await contractByPlayer.claimNFT({ value: price });
+    await data.wait();
+    const filter = contractByPlayer.filters.ClaimNFT(null, null);
+    const events = await contractByPlayer.queryFilter(filter);
+    const event = events[0];
+    const tokenId = event.args?.tokenId;
+    const balance = await CannabisItem.balanceOf(player.address, tokenId);
+    expect(balance).to.equal(1);
   });
 
   it("should not cliam a token when isClaimable = false", async () => {
@@ -72,7 +90,7 @@ describe("CannaItem", async () => {
     const contractByPlayer = await CannabisItem.connect(player);
     await CannabisItem.setClaimable(false);
     expect(
-      contractByPlayer.claimNFT(itemId, {
+      contractByPlayer.claimNFT({
         value: price,
       })
     ).to.be.revertedWith("Claiming is not enabled");
