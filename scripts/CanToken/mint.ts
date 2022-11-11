@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 async function main() {
   const CannabisToken = await ethers.getContractFactory("CannabisToken");
-  const address = process.env.CannabisItemAddress ?? "";
+  const address = process.env.CannabisTokenAddress ?? "";
   const instance = await CannabisToken.attach(address);
   const owner = await instance.owner();
 

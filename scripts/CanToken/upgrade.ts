@@ -1,7 +1,7 @@
 import { ethers, upgrades } from "hardhat";
 
 async function main() {
-  const canItemAddress = process.env.CannabisItemAddress ?? "";
+  const canItemAddress = process.env.CannabisTokenAddress ?? "";
   const CannabisItem = await ethers.getContractFactory("CannabisToken");
   const canItem = await upgrades.upgradeProxy(canItemAddress, CannabisItem);
   console.log("canItem upgraded", canItem);
