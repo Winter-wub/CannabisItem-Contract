@@ -1,6 +1,7 @@
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
+import "hardhat-abi-exporter";
 
 import dotenv from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
@@ -21,7 +22,7 @@ const config: HardhatUserConfig = {
   networks: {
     "bsc-testnet": {
       accounts: [privateKey],
-      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+      url: "https://bsc-testnet.public.blastapi.io",
     },
     goerli: {
       accounts: [privateKey],

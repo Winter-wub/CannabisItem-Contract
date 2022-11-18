@@ -3,12 +3,13 @@ async function main() {
   const CannabisToken = await ethers.getContractFactory("CannabisToken");
   const address = process.env.CannabisTokenAddress ?? "";
   const instance = await CannabisToken.attach(address);
-  const owner = await instance.owner();
-
-  console.log("owner", owner);
-
-  // mint id 1 premium
-  await instance.mint(owner, 20000, ethers.constants.AddressZero);
+  await instance.mint(
+    "0x897746c40019d0B39601D894391CA0D8b7b3746B",
+    2000000000000000
+  );
+  console.log(
+    await instance.balanceOf("0x897746c40019d0B39601D894391CA0D8b7b3746B")
+  );
 }
 
 main().catch((e) => {

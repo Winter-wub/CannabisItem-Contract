@@ -8,25 +8,33 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155Burn
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155SupplyUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "./CannabisToken.sol";
+import "./RandomByRate.sol";
 
-contract CannabisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ERC1155BurnableUpgradeable, ERC1155SupplyUpgradeable {
-    
+contract CannabisItem is
+    Initializable,
+    ERC1155Upgradeable,
+    OwnableUpgradeable,
+    PausableUpgradeable,
+    ERC1155BurnableUpgradeable,
+    ERC1155SupplyUpgradeable
+{
     uint256 private claimPrice;
     string private baseURI;
     bool private isClaimable;
     string private _name;
     uint256 private _startClaimTokenID;
     uint256 private _endClaimTokenID;
+    address private _tokenAddress;
 
     event ClaimNFT(uint256 tokenId, address claimer);
 
-    
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize() initializer public {
+    function initialize() public initializer {
         __ERC1155_init("http://localhost:3000/{id}");
         __Ownable_init();
         __Pausable_init();
@@ -37,7 +45,7 @@ contract CannabisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
         isClaimable = true;
     }
 
-    function name() view public returns (string memory) {
+    function name() public view returns (string memory) {
         return _name;
     }
 
@@ -65,24 +73,35 @@ contract CannabisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
         _unpause();
     }
 
-    function mint(address account, uint256 id, uint256 amount, bytes memory data)
-        public
-        onlyOwner
-    {
+    function mint(
+        address account,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public onlyOwner {
         _mint(account, id, amount, data);
     }
 
-    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
-        public
-        onlyOwner
-    {
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public onlyOwner {
         _mintBatch(to, ids, amounts, data);
     }
 
-    function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
+    function _beforeTokenTransfer(
+        address operator,
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    )
         internal
-        whenNotPaused
         override(ERC1155Upgradeable, ERC1155SupplyUpgradeable)
+        whenNotPaused
     {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
@@ -92,25 +111,90 @@ contract CannabisItem is Initializable, ERC1155Upgradeable, OwnableUpgradeable, 
         claimPrice = price;
     }
 
-    function random(uint num) private view returns(uint){
-        return uint(keccak256(abi.encodePacked(block.timestamp,block.difficulty, msg.sender))) % num;
+    function random(uint num) private view returns (uint) {
+        return
+            uint(
+                keccak256(
+                    abi.encodePacked(
+                        block.timestamp,
+                        block.difficulty,
+                        msg.sender
+                    )
+                )
+            ) % num;
     }
 
-    function claimNFT() public payable returns (uint) {
+    function claimNFT() public payable {
         require(isClaimable == true, "Claiming is not enabled");
-        require(msg.value >= claimPrice, "Not enough ETH");
-        (bool sent, bytes memory data) = owner().call{value: msg.value}("");
-        require(sent, "Failed to send Ether");
-        uint tokenId = random(5);
-        while(balanceOf(owner(), tokenId) == 0) {
-            tokenId = random(5);
+        // Check CAN Token
+
+        // initalize ERC20 (CAN Token Contract)
+        CannabisToken canToken = CannabisToken(_tokenAddress);
+        require(
+            canToken.balanceOf(msg.sender) >= claimPrice,
+            "Not enough CanToken"
+        );
+        uint tokenId = randomIdItem() + 1;
+        while (balanceOf(owner(), tokenId) == 0) {
+            tokenId = randomIdItem() + 1;
         }
+        canToken.transferFrom(msg.sender, canToken.owner(), claimPrice);
         _safeTransferFrom(owner(), msg.sender, tokenId, 1, "");
         emit ClaimNFT(tokenId, msg.sender);
-        return tokenId;
     }
 
     function setClaimable(bool claimable) public onlyOwner {
         isClaimable = claimable;
+    }
+
+    function setCanTokenAddress(address canTokenAddress) public onlyOwner {
+        _tokenAddress = canTokenAddress;
+    }
+
+    function getCanTokenAddress() public view returns (address) {
+        return _tokenAddress;
+    }
+
+    function getClaimPrice() public view returns (uint256) {
+        return claimPrice;
+    }
+
+    function getRandomNumbers(string memory seed)
+        private
+        view
+        returns (uint256[4] memory)
+    {
+        (uint a, uint b, uint c, uint d) = (2, 5, 10, 20); // rate item given max 100
+        uint256 randomKeccak = uint256(
+            keccak256(
+                abi.encodePacked(
+                    seed,
+                    block.difficulty,
+                    block.timestamp,
+                    block.number
+                )
+            )
+        );
+        return [
+            randomKeccak % a,
+            (randomKeccak / a) % b,
+            (randomKeccak / a / b) % c,
+            (randomKeccak / a / b / c) % d
+        ];
+    }
+
+    function randomIdItem() public view returns (uint256) {
+        uint256[4] memory randomNumbers = getRandomNumbers("seed");
+        uint256 max;
+        uint256 maxIndex;
+
+        for (uint256 i = 0; i < randomNumbers.length; i++) {
+            if (randomNumbers[i] > max) {
+                max = randomNumbers[i];
+                maxIndex = i;
+            }
+        }
+
+        return maxIndex;
     }
 }

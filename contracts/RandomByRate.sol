@@ -17,6 +17,7 @@ contract RandomByRate {
         uint256[4] memory randomNumbers = getRandomNumbers("seed");
         uint256 max;
         uint256 maxIndex;
+        
         for (uint256 i = 0; i < randomNumbers.length; i++) {
             if (randomNumbers[i] > max) {
                 max = randomNumbers[i];
@@ -24,7 +25,7 @@ contract RandomByRate {
             }
         }
 
-        return max;
+        return maxIndex;
     }
 
 }

@@ -5,7 +5,7 @@ async function main() {
   const CannabisToken = await ethers.getContractFactory("CannabisToken");
   const can = await upgrades.deployProxy(CannabisToken);
   await can.deployed();
-  console.log(`Can deployed to ${can.address}`);
+  console.log(`CAN deployed to ${can.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
