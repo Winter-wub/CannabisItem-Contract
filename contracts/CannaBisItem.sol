@@ -132,7 +132,7 @@ contract CannabisItem is
         CannabisToken canToken = CannabisToken(_tokenAddress);
         require(
             canToken.balanceOf(msg.sender) >= claimPrice,
-            "Not enough CanToken"
+            "Not enough CAN Token"
         );
         uint tokenId = randomIdItem() + 1;
         while (balanceOf(owner(), tokenId) == 0) {
